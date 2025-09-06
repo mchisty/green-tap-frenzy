@@ -255,23 +255,26 @@ const GreenTapGame = () => {
 
         {/* Game Circle */}
         <div className="flex justify-center">
-          <button
-            onClick={handleCircleTap}
-            disabled={gameState === "idle"}
-            className={`
-              w-48 h-48 rounded-full transition-all duration-300 transform border-4 border-white/20
-              ${getCircleColorClass()}
-              ${gameState === "playing" ? "hover:scale-105 active:scale-95 cursor-pointer" : ""}
-              ${gameState === "idle" ? "opacity-50 cursor-not-allowed" : ""}
-              animate-color-change
-              before:absolute before:inset-2 before:rounded-full before:bg-gradient-to-br before:from-white/30 before:to-transparent before:pointer-events-none
-            `}
-            style={{
-              boxShadow: circleColor === "green" 
-                ? "0 0 60px hsl(var(--game-green) / 0.8), inset 0 4px 8px rgba(255,255,255,0.2)" 
-                : "var(--shadow-3d), inset 0 4px 8px rgba(255,255,255,0.2)"
-            }}
-          />
+          <div className="relative">
+            <button
+              onClick={handleCircleTap}
+              disabled={gameState === "idle"}
+              className={`
+                w-48 h-48 rounded-full transition-all duration-300 transform border-4 border-white/20
+                ${getCircleColorClass()}
+                ${gameState === "playing" ? "hover:scale-105 active:scale-95 cursor-pointer" : ""}
+                ${gameState === "idle" ? "opacity-50 cursor-not-allowed" : ""}
+                animate-color-change
+              `}
+              style={{
+                boxShadow: circleColor === "green" 
+                  ? "0 0 60px hsl(var(--game-green) / 0.8), inset 0 4px 8px rgba(255,255,255,0.2)" 
+                  : "var(--shadow-3d), inset 0 4px 8px rgba(255,255,255,0.2)"
+              }}
+            />
+            {/* 3D highlight overlay */}
+            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
+          </div>
         </div>
 
         {/* Game Controls */}
