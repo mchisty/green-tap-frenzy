@@ -10,7 +10,7 @@ const GreenTapGame = () => {
   const [score, setScore] = useState(0);
   const [circleColor, setCircleColor] = useState<CircleColor>("red");
   const [cycleCount, setCycleCount] = useState(0);
-  const [timeInterval, setTimeInterval] = useState(1500);
+  const [timeInterval, setTimeInterval] = useState(1000);
   const [isGreenPhase, setIsGreenPhase] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
@@ -66,7 +66,7 @@ const GreenTapGame = () => {
     setGameState("playing");
     setScore(0);
     setCycleCount(0);
-    setTimeInterval(1500);
+    setTimeInterval(1000);
     setIsGreenPhase(false);
     setCircleColor(getRandomColor());
     setFinalScore(0);
@@ -90,7 +90,7 @@ const GreenTapGame = () => {
       
       // Increase difficulty every 5 points
       if (newScore % 5 === 0) {
-        setTimeInterval(prev => Math.max(prev * 0.9, 500)); // Minimum 500ms
+        setTimeInterval(prev => Math.max(prev * 0.85, 500)); // Minimum 500ms
       }
       
       // Reset cycle and continue
