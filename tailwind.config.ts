@@ -47,6 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        game: {
+          red: "hsl(var(--game-red))",
+          blue: "hsl(var(--game-blue))",
+          yellow: "hsl(var(--game-yellow))",
+          green: "hsl(var(--game-green))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -80,10 +86,44 @@ export default {
             height: "0",
           },
         },
+        "pulse-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 20px hsl(var(--primary) / 0.3)",
+            transform: "scale(1)",
+          },
+          "50%": {
+            boxShadow: "0 0 40px hsl(var(--primary) / 0.6)",
+            transform: "scale(1.05)",
+          },
+        },
+        "bounce-in": {
+          "0%": {
+            transform: "scale(0.8)",
+            opacity: "0",
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1",
+          },
+        },
+        "color-change": {
+          "0%": {
+            transform: "scale(1)",
+          },
+          "50%": {
+            transform: "scale(1.1)",
+          },
+          "100%": {
+            transform: "scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "bounce-in": "bounce-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "color-change": "color-change 0.3s ease-out",
       },
     },
   },
