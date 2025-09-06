@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, ShoppingCart, RotateCcw } from "lucide-react";
+import { useAdMob } from "@/hooks/useAdMob";
+import { useInAppPurchase } from "@/hooks/useInAppPurchase";
+import { useToast } from "@/hooks/use-toast";
 
 type GameState = "idle" | "playing" | "gameOver";
 type CircleColor = "red" | "blue" | "yellow" | "green";
@@ -17,6 +20,25 @@ const GreenTapGame = () => {
   const [greenTimeoutId, setGreenTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [wasRecentlyGreen, setWasRecentlyGreen] = useState(false);
   const [showScorePop, setShowScorePop] = useState(false);
+
+  const { toast } = useToast();
+  
+  // AdMob integration
+  const {
+    adsRemoved,
+    showBannerAd,
+    hideBannerAd,
+    showInterstitialAd,
+    removeAds
+  } = useAdMob();
+
+  // In-App Purchase integration
+  const {
+    isPurchasing,
+    isRestoring,
+    purchaseRemoveAds,
+    restorePurchases
+  } = useInAppPurchase(removeAds);
 
   const colors = ["red", "blue", "yellow"] as const;
 
@@ -75,6 +97,9 @@ const GreenTapGame = () => {
     setIsGreenPhase(false);
     setCircleColor(getRandomColor());
     setFinalScore(0);
+    
+    // Show banner ad when game starts (if ads not removed)
+    showBannerAd();
   };
 
   const endGame = () => {
@@ -82,6 +107,10 @@ const GreenTapGame = () => {
     setGameState("gameOver");
     setFinalScore(score);
     setIsGreenPhase(false);
+    
+    // Hide banner ad and show interstitial ad on game over
+    hideBannerAd();
+    showInterstitialAd();
   };
 
   const handleCircleTap = () => {
@@ -211,6 +240,38 @@ const GreenTapGame = () => {
     }
   };
 
+  const handlePurchaseRemoveAds = async () => {
+    const result = await purchaseRemoveAds();
+    if (result?.success) {
+      toast({
+        title: "Purchase Successful!",
+        description: "Ads have been removed permanently.",
+      });
+    } else {
+      toast({
+        title: "Purchase Failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRestorePurchases = async () => {
+    const result = await restorePurchases();
+    if (result?.success) {
+      toast({
+        title: "Purchases Restored",
+        description: "Your previous purchases have been restored.",
+      });
+    } else {
+      toast({
+        title: "Restore Failed",
+        description: "No purchases found to restore.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-background to-card">
       <div className="text-center space-y-8 max-w-md w-full">
@@ -315,6 +376,30 @@ const GreenTapGame = () => {
           )}
         </div>
 
+        {/* Monetization Buttons */}
+        {gameState === "idle" && !adsRemoved && (
+          <div className="space-y-3">
+            <Button
+              onClick={handlePurchaseRemoveAds}
+              disabled={isPurchasing}
+              className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold shadow-lg"
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              {isPurchasing ? "Processing..." : "Remove Ads ($2.99)"}
+            </Button>
+            
+            <Button
+              onClick={handleRestorePurchases}
+              disabled={isRestoring}
+              variant="outline"
+              className="w-full"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {isRestoring ? "Restoring..." : "Restore Purchases"}
+            </Button>
+          </div>
+        )}
+
         {/* Instructions */}
         {gameState === "idle" && (
           <div className="text-lg text-muted-foreground space-y-3 bg-gradient-to-br from-card/60 to-card/30 backdrop-blur-sm p-6 rounded-xl border border-white/10 text-3d">
@@ -326,6 +411,13 @@ const GreenTapGame = () => {
           </div>
         )}
       </div>
+      
+      {/* Ad-free indicator */}
+      {adsRemoved && (
+        <div className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+          Ad-Free ✓
+        </div>
+      )}
     </div>
   );
 };
