@@ -29,7 +29,8 @@ const GreenTapGame = () => {
     showBannerAd,
     hideBannerAd,
     showInterstitialAd,
-    removeAds
+    removeAds,
+    bannerVisible
   } = useAdMob();
 
   // In-App Purchase integration
@@ -416,6 +417,13 @@ const GreenTapGame = () => {
       {adsRemoved && (
         <div className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
           Ad-Free ✓
+        </div>
+      )}
+      
+      {/* Banner Ad Simulation (Web Preview Only) */}
+      {bannerVisible && !adsRemoved && (
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white text-center py-3 text-sm border-t border-gray-600">
+          🎬 Banner Ad (Simulated for Web Preview) - Would be real AdMob banner on mobile
         </div>
       )}
     </div>

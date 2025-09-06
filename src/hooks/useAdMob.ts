@@ -33,7 +33,23 @@ export const useAdMob = () => {
   };
 
   const showBannerAd = useCallback(async () => {
-    if (!isInitialized || adsRemoved || !Capacitor.isNativePlatform()) return;
+    console.log('🎯 showBannerAd called - isInitialized:', isInitialized, 'adsRemoved:', adsRemoved, 'isNative:', Capacitor.isNativePlatform());
+    
+    if (adsRemoved) {
+      console.log('❌ Banner ad blocked - ads removed by user');
+      return;
+    }
+
+    if (!Capacitor.isNativePlatform()) {
+      console.log('🌐 Web preview - simulating banner ad display');
+      setBannerVisible(true);
+      return;
+    }
+
+    if (!isInitialized) {
+      console.log('❌ Banner ad blocked - AdMob not initialized');
+      return;
+    }
 
     try {
       const options: BannerAdOptions = {
@@ -46,8 +62,9 @@ export const useAdMob = () => {
 
       await AdMob.showBanner(options);
       setBannerVisible(true);
+      console.log('✅ Banner ad displayed successfully');
     } catch (error) {
-      console.error('Failed to show banner ad:', error);
+      console.error('❌ Failed to show banner ad:', error);
     }
   }, [isInitialized, adsRemoved]);
 
@@ -63,13 +80,34 @@ export const useAdMob = () => {
   }, []);
 
   const showInterstitialAd = useCallback(async () => {
-    if (!isInitialized || adsRemoved || !Capacitor.isNativePlatform()) return;
-
     // Only show interstitial every 3 game overs
     const newGameOverCount = gameOverCount + 1;
     setGameOverCount(newGameOverCount);
 
-    if (newGameOverCount % 3 !== 0) return;
+    console.log('🎯 showInterstitialAd called - Game Over #', newGameOverCount, 'adsRemoved:', adsRemoved);
+
+    if (adsRemoved) {
+      console.log('❌ Interstitial ad blocked - ads removed by user');
+      return;
+    }
+
+    if (newGameOverCount % 3 !== 0) {
+      console.log('⏳ Interstitial ad skipped - not 3rd game over yet (need', 3 - (newGameOverCount % 3), 'more)');
+      return;
+    }
+
+    console.log('🚀 Time to show interstitial ad! (Game Over #' + newGameOverCount + ')');
+
+    if (!Capacitor.isNativePlatform()) {
+      console.log('🌐 Web preview - simulating interstitial ad');
+      alert('🎬 Interstitial Ad (Simulated)\n\nThis would be a full-screen ad on mobile!\n\nGame Over Count: ' + newGameOverCount);
+      return;
+    }
+
+    if (!isInitialized) {
+      console.log('❌ Interstitial ad blocked - AdMob not initialized');
+      return;
+    }
 
     try {
       const options = {
@@ -79,8 +117,9 @@ export const useAdMob = () => {
 
       await AdMob.prepareInterstitial(options);
       await AdMob.showInterstitial();
+      console.log('✅ Interstitial ad displayed successfully');
     } catch (error) {
-      console.error('Failed to show interstitial ad:', error);
+      console.error('❌ Failed to show interstitial ad:', error);
     }
   }, [isInitialized, adsRemoved, gameOverCount]);
 
