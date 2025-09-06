@@ -14,6 +14,7 @@ const GreenTapGame = () => {
   const [isGreenPhase, setIsGreenPhase] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [greenTimeoutId, setGreenTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const colors = ["red", "blue", "yellow"] as const;
 
@@ -85,6 +86,12 @@ const GreenTapGame = () => {
     if (gameState !== "playing") return;
 
     if (circleColor === "green") {
+      // Clear the green timeout to prevent race condition
+      if (greenTimeoutId) {
+        clearTimeout(greenTimeoutId);
+        setGreenTimeoutId(null);
+      }
+      
       // Correct tap on green
       playSuccessSound();
       const newScore = score + 1;
@@ -121,19 +128,28 @@ const GreenTapGame = () => {
         setIsGreenPhase(true);
         setCycleCount(0);
         
-        // Start countdown for green phase
+        // Start countdown for green phase with proper cleanup
         const greenTimer = setTimeout(() => {
-          if (isGreenPhase) {
-            endGame(); // Player didn't tap green in time
-          }
+          setIsGreenPhase(false);
+          setGreenTimeoutId(null);
+          endGame(); // Player didn't tap green in time
         }, 1500);
-
-        return () => clearTimeout(greenTimer);
+        
+        setGreenTimeoutId(greenTimer);
       }
     }, timeInterval);
 
     return () => clearTimeout(timer);
-  }, [gameState, cycleCount, timeInterval, isGreenPhase]);
+  }, [gameState, cycleCount, timeInterval]);
+
+  // Cleanup green timeout on unmount or game state change
+  useEffect(() => {
+    return () => {
+      if (greenTimeoutId) {
+        clearTimeout(greenTimeoutId);
+      }
+    };
+  }, [greenTimeoutId]);
 
   // Reset green phase when color changes away from green
   useEffect(() => {
