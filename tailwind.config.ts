@@ -117,6 +117,44 @@ export default {
             transform: "scale(1)",
           },
         },
+        "score-glow": {
+          "0%, 100%": {
+            textShadow: "0 0 10px currentColor, 0 0 20px currentColor",
+            transform: "scale(1)",
+          },
+          "50%": {
+            textShadow: "0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor",
+            transform: "scale(1.05)",
+          },
+        },
+        "pop-in": {
+          "0%": {
+            transform: "scale(0) rotate(-180deg)",
+            opacity: "0",
+          },
+          "50%": {
+            transform: "scale(1.3) rotate(-90deg)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "scale(1) rotate(0deg)",
+            opacity: "1",
+          },
+        },
+        "game-over-shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%": { transform: "translateX(-4px) rotate(-1deg)" },
+          "20%": { transform: "translateX(4px) rotate(1deg)" },
+          "30%": { transform: "translateX(-4px) rotate(-1deg)" },
+          "40%": { transform: "translateX(4px) rotate(1deg)" },
+          "50%": { transform: "translateX(-2px) rotate(-0.5deg)" },
+          "60%": { transform: "translateX(2px) rotate(0.5deg)" },
+        },
+        "button-press": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(0.95)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -124,6 +162,10 @@ export default {
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "bounce-in": "bounce-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         "color-change": "color-change 0.3s ease-out",
+        "score-glow": "score-glow 2s ease-in-out infinite",
+        "pop-in": "pop-in 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+        "game-over-shake": "game-over-shake 0.6s ease-in-out",
+        "button-press": "button-press 0.15s ease-out",
       },
     },
   },
