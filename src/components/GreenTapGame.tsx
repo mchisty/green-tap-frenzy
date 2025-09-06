@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { Volume2, VolumeX } from "lucide-react";
 
 type GameState = "idle" | "playing" | "gameOver";
 type CircleColor = "red" | "blue" | "yellow" | "green";
@@ -12,8 +13,50 @@ const GreenTapGame = () => {
   const [timeInterval, setTimeInterval] = useState(2000);
   const [isGreenPhase, setIsGreenPhase] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
 
   const colors = ["red", "blue", "yellow"] as const;
+
+  // Sound generation functions
+  const playSuccessSound = useCallback(() => {
+    if (isMuted) return;
+    
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.2);
+  }, [isMuted]);
+
+  const playErrorSound = useCallback(() => {
+    if (isMuted) return;
+    
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  }, [isMuted]);
 
   const getRandomColor = (): "red" | "blue" | "yellow" => {
     return colors[Math.floor(Math.random() * colors.length)];
@@ -30,6 +73,7 @@ const GreenTapGame = () => {
   };
 
   const endGame = () => {
+    playErrorSound();
     setGameState("gameOver");
     setFinalScore(score);
     setIsGreenPhase(false);
@@ -40,6 +84,7 @@ const GreenTapGame = () => {
 
     if (circleColor === "green") {
       // Correct tap on green
+      playSuccessSound();
       const newScore = score + 1;
       setScore(newScore);
       
@@ -54,6 +99,7 @@ const GreenTapGame = () => {
       setCircleColor(getRandomColor());
     } else {
       // Wrong tap - game over
+      playErrorSound();
       endGame();
     }
   };
@@ -114,9 +160,19 @@ const GreenTapGame = () => {
       <div className="text-center space-y-8 max-w-md w-full">
         {/* Title */}
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Green Tap Challenge
-          </h1>
+          <div className="flex items-center justify-center gap-4">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Green Tap Challenge
+            </h1>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setIsMuted(!isMuted)}
+              className="shrink-0"
+            >
+              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </Button>
+          </div>
           <p className="text-muted-foreground">
             Tap the circle only when it turns green!
           </p>
