@@ -85,9 +85,12 @@ const GreenTapGame = () => {
   const handleCircleTap = () => {
     if (gameState !== "playing") return;
 
+    console.log("Circle tapped - Color:", circleColor, "IsGreenPhase:", isGreenPhase, "Score:", score);
+
     if (circleColor === "green") {
       // Clear the green timeout to prevent race condition
       if (greenTimeoutId) {
+        console.log("Clearing green timeout on successful tap");
         clearTimeout(greenTimeoutId);
         setGreenTimeoutId(null);
       }
@@ -97,9 +100,13 @@ const GreenTapGame = () => {
       const newScore = score + 1;
       setScore(newScore);
       
+      console.log("Successful green tap! New score:", newScore);
+      
       // Increase difficulty every 5 points
       if (newScore % 5 === 0) {
-        setTimeInterval(prev => Math.max(prev * 0.85, 500)); // Minimum 500ms
+        const newInterval = Math.max(timeInterval * 0.85, 500);
+        console.log("Speed increase! Old interval:", timeInterval, "New interval:", newInterval);
+        setTimeInterval(newInterval);
       }
       
       // Reset cycle and continue
@@ -108,6 +115,7 @@ const GreenTapGame = () => {
       setCircleColor(getRandomColor());
     } else {
       // Wrong tap - game over
+      console.log("Wrong tap - game over");
       playErrorSound();
       endGame();
     }
@@ -129,11 +137,15 @@ const GreenTapGame = () => {
         setCycleCount(0);
         
         // Start countdown for green phase with proper cleanup
+        const greenTimeoutDuration = Math.max(timeInterval * 1.5, 750); // Proportional to game speed
+        console.log("Green phase started, timeout duration:", greenTimeoutDuration);
+        
         const greenTimer = setTimeout(() => {
+          console.log("Green timeout fired - game over");
           setIsGreenPhase(false);
           setGreenTimeoutId(null);
           endGame(); // Player didn't tap green in time
-        }, 1500);
+        }, greenTimeoutDuration);
         
         setGreenTimeoutId(greenTimer);
       }
