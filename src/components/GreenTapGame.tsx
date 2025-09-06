@@ -217,7 +217,7 @@ const GreenTapGame = () => {
         {/* Title */}
         <div className="space-y-2">
           <div className="flex items-center justify-center gap-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent title-3d animate-title-float">
               Green Tap Challenge
             </h1>
             <Button
@@ -229,7 +229,7 @@ const GreenTapGame = () => {
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
             </Button>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-3d text-lg">
             Tap the circle only when it turns green!
           </p>
         </div>
@@ -237,17 +237,17 @@ const GreenTapGame = () => {
         {/* Score */}
         <div className="text-center relative">
           <div className="relative">
-            <p className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-score-glow">
+            <p className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent glow-3d animate-score-glow">
               Score: {gameState === "gameOver" ? finalScore : score}
             </p>
             {showScorePop && (
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-2xl font-bold text-primary animate-pop-in pointer-events-none">
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-3xl font-bold text-primary animate-pop-in-3d pointer-events-none glow-3d">
                 +1
               </div>
             )}
           </div>
           {gameState === "playing" && (
-            <p className="text-sm text-muted-foreground mt-2 bg-gradient-to-r from-game-green to-game-blue bg-clip-text text-transparent">
+            <p className="text-lg text-muted-foreground mt-2 bg-gradient-to-r from-game-green to-game-blue bg-clip-text text-transparent text-3d">
               Speed: {Math.round((1000 / timeInterval) * 100)}%
             </p>
           )}
@@ -283,7 +283,7 @@ const GreenTapGame = () => {
             <Button 
               onClick={startGame}
               size="lg"
-              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-[var(--shadow-button)] animate-bounce-in active:animate-button-press transition-all duration-200"
+              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-[var(--shadow-button)] animate-bounce-in active:animate-button-press transition-all duration-200 text-3d"
             >
               Start Game
             </Button>
@@ -292,14 +292,14 @@ const GreenTapGame = () => {
           {gameState === "gameOver" && (
             <div className="space-y-4 animate-bounce-in">
               <div className="text-center space-y-2">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-destructive via-red-500 to-destructive bg-clip-text text-transparent animate-game-over-shake">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-destructive via-red-500 to-destructive bg-clip-text text-transparent message-3d animate-game-over-shake">
                   Game Over!
                 </h2>
-                <p className="text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <p className="text-2xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent glow-3d">
                   Final Score: {finalScore}
                 </p>
                 {finalScore > 0 && (
-                  <p className="text-sm text-muted-foreground bg-gradient-to-r from-game-yellow to-game-green bg-clip-text text-transparent">
+                  <p className="text-lg text-muted-foreground bg-gradient-to-r from-game-yellow to-game-green bg-clip-text text-transparent text-3d">
                     Great job! You reached {Math.floor(finalScore / 5) + 1}x speed!
                   </p>
                 )}
@@ -307,7 +307,7 @@ const GreenTapGame = () => {
               <Button 
                 onClick={startGame}
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-[var(--shadow-button)] active:animate-button-press transition-all duration-200"
+                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-[var(--shadow-button)] active:animate-button-press transition-all duration-200 text-3d"
               >
                 Play Again
               </Button>
@@ -317,12 +317,12 @@ const GreenTapGame = () => {
 
         {/* Instructions */}
         {gameState === "idle" && (
-          <div className="text-sm text-muted-foreground space-y-2 bg-gradient-to-br from-card/60 to-card/30 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-            <p>• Tap the circle only when it's <span className="bg-gradient-to-r from-game-green to-green-400 bg-clip-text text-transparent font-bold">green</span></p>
-            <p>• Colors change every <span className="text-primary font-semibold">1 second</span></p>
-            <p>• Green appears every <span className="text-accent font-semibold">4th change</span></p>
-            <p>• Speed increases every <span className="text-game-yellow font-semibold">5 points</span></p>
-            <p>• You have <span className="text-destructive font-semibold">1.5 seconds</span> to tap green!</p>
+          <div className="text-lg text-muted-foreground space-y-3 bg-gradient-to-br from-card/60 to-card/30 backdrop-blur-sm p-6 rounded-xl border border-white/10 text-3d">
+            <p>• Tap the circle only when it's <span className="bg-gradient-to-r from-game-green to-green-400 bg-clip-text text-transparent font-bold glow-3d">green</span></p>
+            <p>• Colors change every <span className="text-primary font-semibold glow-3d">1 second</span></p>
+            <p>• Green appears every <span className="text-accent font-semibold glow-3d">4th change</span></p>
+            <p>• Speed increases every <span className="text-game-yellow font-semibold glow-3d">5 points</span></p>
+            <p>• You have <span className="text-destructive font-semibold glow-3d">1.5 seconds</span> to tap green!</p>
           </div>
         )}
       </div>

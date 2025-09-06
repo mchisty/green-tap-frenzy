@@ -127,18 +127,26 @@ export default {
             transform: "scale(1.05)",
           },
         },
-        "pop-in": {
+        "pop-in-3d": {
           "0%": {
-            transform: "scale(0) rotate(-180deg)",
+            transform: "scale(0) rotate(-180deg) perspective(400px) rotateX(-90deg)",
             opacity: "0",
           },
           "50%": {
-            transform: "scale(1.3) rotate(-90deg)",
+            transform: "scale(1.3) rotate(-90deg) perspective(400px) rotateX(0deg)",
             opacity: "1",
           },
           "100%": {
-            transform: "scale(1) rotate(0deg)",
+            transform: "scale(1) rotate(0deg) perspective(400px) rotateX(5deg)",
             opacity: "1",
+          },
+        },
+        "title-float": {
+          "0%, 100%": {
+            transform: "perspective(800px) rotateX(10deg) rotateY(-5deg) translateY(0px)",
+          },
+          "50%": {
+            transform: "perspective(800px) rotateX(15deg) rotateY(-2deg) translateY(-5px)",
           },
         },
         "game-over-shake": {
@@ -164,8 +172,10 @@ export default {
         "color-change": "color-change 0.3s ease-out",
         "score-glow": "score-glow 2s ease-in-out infinite",
         "pop-in": "pop-in 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+        "pop-in-3d": "pop-in-3d 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
         "game-over-shake": "game-over-shake 0.6s ease-in-out",
         "button-press": "button-press 0.15s ease-out",
+        "title-float": "title-float 4s ease-in-out infinite",
       },
     },
   },
