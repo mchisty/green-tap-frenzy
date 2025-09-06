@@ -215,9 +215,9 @@ const GreenTapGame = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-background to-card">
       <div className="text-center space-y-8 max-w-md w-full">
         {/* Title */}
-        <div className="space-y-2">
+        <div className="space-y-4">
           <div className="flex items-center justify-center gap-4">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent title-3d animate-title-float">
+            <h1 className="text-4xl font-bold text-primary title-clean">
               Green Tap Challenge
             </h1>
             <Button
@@ -229,7 +229,7 @@ const GreenTapGame = () => {
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
             </Button>
           </div>
-          <p className="text-muted-foreground text-3d text-lg">
+          <p className="text-muted-foreground text-lg">
             Tap the circle only when it turns green!
           </p>
         </div>

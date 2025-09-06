@@ -137,10 +137,10 @@ All colors MUST be HSL.
     transform: perspective(500px) rotateX(15deg);
   }
 
-  .title-3d {
-    text-shadow: var(--shadow-title-3d);
-    transform: perspective(800px) rotateX(10deg) rotateY(-5deg);
-    filter: drop-shadow(0 10px 20px hsl(0 0% 0% / 0.3));
+  .title-clean {
+    text-shadow: 0 2px 4px hsl(0 0% 0% / 0.1);
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .glow-3d {
