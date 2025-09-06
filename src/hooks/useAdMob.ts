@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AdMob, BannerAdOptions, BannerAdSize, BannerAdPosition, RewardInterstitialAdOptions } from '@capacitor-community/admob';
+import { AdMob, BannerAdOptions, BannerAdSize, BannerAdPosition } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 
 export const useAdMob = () => {
