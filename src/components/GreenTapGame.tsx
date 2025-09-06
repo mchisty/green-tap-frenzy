@@ -15,6 +15,7 @@ const GreenTapGame = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [greenTimeoutId, setGreenTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [wasRecentlyGreen, setWasRecentlyGreen] = useState(false);
 
   const colors = ["red", "blue", "yellow"] as const;
 
@@ -85,15 +86,19 @@ const GreenTapGame = () => {
   const handleCircleTap = () => {
     if (gameState !== "playing") return;
 
-    console.log("Circle tapped - Color:", circleColor, "IsGreenPhase:", isGreenPhase, "Score:", score);
+    console.log("Circle tapped - Color:", circleColor, "WasRecentlyGreen:", wasRecentlyGreen, "IsGreenPhase:", isGreenPhase, "Score:", score);
 
-    if (circleColor === "green") {
+    // Accept tap if circle is green OR was recently green (grace period)
+    if (circleColor === "green" || wasRecentlyGreen) {
       // Clear the green timeout to prevent race condition
       if (greenTimeoutId) {
         console.log("Clearing green timeout on successful tap");
         clearTimeout(greenTimeoutId);
         setGreenTimeoutId(null);
       }
+      
+      // Reset grace period
+      setWasRecentlyGreen(false);
       
       // Correct tap on green
       playSuccessSound();
@@ -132,9 +137,17 @@ const GreenTapGame = () => {
         setCircleColor(getRandomColor());
       } else {
         // 4th change is green
+        console.log("Changing to green, cycle:", cycleCount);
         setCircleColor("green");
         setIsGreenPhase(true);
+        setWasRecentlyGreen(true);
         setCycleCount(0);
+        
+        // Clear grace period after 200ms
+        setTimeout(() => {
+          console.log("Grace period expired");
+          setWasRecentlyGreen(false);
+        }, 200);
         
         // Start countdown for green phase with proper cleanup
         const greenTimeoutDuration = Math.max(timeInterval * 1.5, 750); // Proportional to game speed
@@ -144,6 +157,7 @@ const GreenTapGame = () => {
           console.log("Green timeout fired - game over");
           setIsGreenPhase(false);
           setGreenTimeoutId(null);
+          setWasRecentlyGreen(false);
           endGame(); // Player didn't tap green in time
         }, greenTimeoutDuration);
         
