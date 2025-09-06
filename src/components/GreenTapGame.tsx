@@ -114,10 +114,14 @@ const GreenTapGame = () => {
         setTimeInterval(newInterval);
       }
       
-      // Reset cycle and continue
+      // Reset cycle and continue after brief pause
       setCycleCount(0);
       setIsGreenPhase(false);
-      setCircleColor(getRandomColor());
+      
+      // Add brief pause before starting next cycle to prevent confusion
+      setTimeout(() => {
+        setCircleColor(getRandomColor());
+      }, 300);
     } else {
       // Wrong tap - game over
       console.log("Wrong tap - game over");
