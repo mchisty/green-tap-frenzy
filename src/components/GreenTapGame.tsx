@@ -10,7 +10,7 @@ const GreenTapGame = () => {
   const [score, setScore] = useState(0);
   const [circleColor, setCircleColor] = useState<CircleColor>("red");
   const [cycleCount, setCycleCount] = useState(0);
-  const [timeInterval, setTimeInterval] = useState(2000);
+  const [timeInterval, setTimeInterval] = useState(1500);
   const [isGreenPhase, setIsGreenPhase] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
@@ -66,7 +66,7 @@ const GreenTapGame = () => {
     setGameState("playing");
     setScore(0);
     setCycleCount(0);
-    setTimeInterval(2000);
+    setTimeInterval(1500);
     setIsGreenPhase(false);
     setCircleColor(getRandomColor());
     setFinalScore(0);
