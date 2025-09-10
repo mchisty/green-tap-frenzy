@@ -2,11 +2,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { AdMob, BannerAdOptions, BannerAdSize, BannerAdPosition } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 
+// Ad Configuration
+const AD_CONFIG = {
+  INTERSTITIAL_FREQUENCY: 3, // Show after every 3rd game over
+  COOLDOWN_SECONDS: 90, // 90 second cooldown between interstitials
+  MAX_INTERSTITIALS_PER_SESSION: 10 // Safety limit per session
+};
+
 export const useAdMob = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [gameOverCount, setGameOverCount] = useState(0);
   const [adsRemoved, setAdsRemoved] = useState(false);
+  const [lastInterstitialTime, setLastInterstitialTime] = useState(0);
+  const [sessionInterstitialCount, setSessionInterstitialCount] = useState(0);
 
   useEffect(() => {
     // Check if ads were purchased (stored in localStorage)
@@ -80,27 +89,49 @@ export const useAdMob = () => {
   }, []);
 
   const showInterstitialAd = useCallback(async () => {
-    // Only show interstitial every 3 game overs
     const newGameOverCount = gameOverCount + 1;
     setGameOverCount(newGameOverCount);
 
+    const currentTime = Date.now();
+    const timeSinceLastAd = (currentTime - lastInterstitialTime) / 1000;
+    
     console.log('🎯 showInterstitialAd called - Game Over #', newGameOverCount, 'adsRemoved:', adsRemoved);
+    console.log('📊 Session stats - Interstitials shown:', sessionInterstitialCount, 'Time since last:', Math.round(timeSinceLastAd), 's');
 
     if (adsRemoved) {
       console.log('❌ Interstitial ad blocked - ads removed by user');
       return;
     }
 
-    if (newGameOverCount % 3 !== 0) {
-      console.log('⏳ Interstitial ad skipped - not 3rd game over yet (need', 3 - (newGameOverCount % 3), 'more)');
+    // Check session limit
+    if (sessionInterstitialCount >= AD_CONFIG.MAX_INTERSTITIALS_PER_SESSION) {
+      console.log('❌ Interstitial ad blocked - session limit reached (' + AD_CONFIG.MAX_INTERSTITIALS_PER_SESSION + ')');
+      return;
+    }
+
+    // Check frequency
+    if (newGameOverCount % AD_CONFIG.INTERSTITIAL_FREQUENCY !== 0) {
+      const remaining = AD_CONFIG.INTERSTITIAL_FREQUENCY - (newGameOverCount % AD_CONFIG.INTERSTITIAL_FREQUENCY);
+      console.log('⏳ Interstitial ad skipped - need', remaining, 'more game overs (every', AD_CONFIG.INTERSTITIAL_FREQUENCY, 'games)');
+      return;
+    }
+
+    // Check cooldown
+    if (lastInterstitialTime > 0 && timeSinceLastAd < AD_CONFIG.COOLDOWN_SECONDS) {
+      const remainingCooldown = Math.ceil(AD_CONFIG.COOLDOWN_SECONDS - timeSinceLastAd);
+      console.log('⏰ Interstitial ad blocked - cooldown active (' + remainingCooldown + 's remaining)');
       return;
     }
 
     console.log('🚀 Time to show interstitial ad! (Game Over #' + newGameOverCount + ')');
 
+    // Update timing and counter
+    setLastInterstitialTime(currentTime);
+    setSessionInterstitialCount(prev => prev + 1);
+
     if (!Capacitor.isNativePlatform()) {
       console.log('🌐 Web preview - simulating interstitial ad');
-      alert('🎬 Interstitial Ad (Simulated)\n\nThis would be a full-screen ad on mobile!\n\nGame Over Count: ' + newGameOverCount);
+      alert('🎬 Interstitial Ad (Simulated)\n\nThis would be a full-screen ad on mobile!\n\nGame Over: ' + newGameOverCount + '\nSession Ads: ' + (sessionInterstitialCount + 1));
       return;
     }
 
@@ -121,7 +152,7 @@ export const useAdMob = () => {
     } catch (error) {
       console.error('❌ Failed to show interstitial ad:', error);
     }
-  }, [isInitialized, adsRemoved, gameOverCount]);
+  }, [isInitialized, adsRemoved, gameOverCount, lastInterstitialTime, sessionInterstitialCount]);
 
   const removeAds = () => {
     setAdsRemoved(true);
