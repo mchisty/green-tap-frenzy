@@ -52,6 +52,12 @@ export default {
           blue: "hsl(var(--game-blue))",
           yellow: "hsl(var(--game-yellow))",
           green: "hsl(var(--game-green))",
+          purple: "hsl(var(--game-purple))",
+          orange: "hsl(var(--game-orange))",
+          pink: "hsl(var(--game-pink))",
+          cyan: "hsl(var(--game-cyan))",
+          magenta: "hsl(var(--game-magenta))",
+          lime: "hsl(var(--game-lime))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -163,6 +169,38 @@ export default {
           "50%": { transform: "scale(0.95)" },
           "100%": { transform: "scale(1)" },
         },
+        "circle-morph": {
+          "0%": { 
+            transform: "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)",
+            borderRadius: "50%"
+          },
+          "25%": { 
+            transform: "perspective(800px) rotateX(5deg) rotateY(-5deg) scale(1.02)",
+            borderRadius: "45%"
+          },
+          "50%": { 
+            transform: "perspective(800px) rotateX(-5deg) rotateY(5deg) scale(1.05)",
+            borderRadius: "40%"
+          },
+          "75%": { 
+            transform: "perspective(800px) rotateX(5deg) rotateY(5deg) scale(1.02)",
+            borderRadius: "45%"
+          },
+          "100%": { 
+            transform: "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)",
+            borderRadius: "50%"
+          },
+        },
+        "circle-pulse-3d": {
+          "0%, 100%": { 
+            transform: "perspective(800px) rotateX(0deg) scale(1)",
+            boxShadow: "var(--shadow-circle-3d)"
+          },
+          "50%": { 
+            transform: "perspective(800px) rotateX(10deg) scale(1.08)",
+            boxShadow: "var(--shadow-circle-deep)"
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -176,6 +214,8 @@ export default {
         "game-over-shake": "game-over-shake 0.6s ease-in-out",
         "button-press": "button-press 0.15s ease-out",
         "title-float": "title-float 4s ease-in-out infinite",
+        "circle-morph": "circle-morph 4s ease-in-out infinite",
+        "circle-pulse-3d": "circle-pulse-3d 3s ease-in-out infinite",
       },
     },
   },

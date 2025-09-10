@@ -6,7 +6,7 @@ import { useInAppPurchase } from "@/hooks/useInAppPurchase";
 import { useToast } from "@/hooks/use-toast";
 
 type GameState = "idle" | "playing" | "gameOver";
-type CircleColor = "red" | "blue" | "yellow" | "green";
+type CircleColor = "red" | "blue" | "yellow" | "green" | "purple" | "orange" | "pink" | "cyan" | "magenta" | "lime";
 
 const GreenTapGame = () => {
   const [gameState, setGameState] = useState<GameState>("idle");
@@ -41,7 +41,7 @@ const GreenTapGame = () => {
     restorePurchases
   } = useInAppPurchase(removeAds);
 
-  const colors = ["red", "blue", "yellow"] as const;
+  const colors = ["red", "blue", "yellow", "purple", "orange", "pink", "cyan", "magenta", "lime"] as const;
 
   // Sound generation functions
   const playSuccessSound = useCallback(() => {
@@ -86,7 +86,7 @@ const GreenTapGame = () => {
     oscillator.stop(audioContext.currentTime + 0.4);
   }, [isMuted]);
 
-  const getRandomColor = (): "red" | "blue" | "yellow" => {
+  const getRandomColor = (): Exclude<CircleColor, "green"> => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
@@ -224,8 +224,10 @@ const GreenTapGame = () => {
   }, [circleColor]);
 
   const getCircleColorClass = () => {
-    const baseClasses = "relative overflow-hidden";
-    const shadowClass = "shadow-[var(--shadow-3d)]";
+    const baseClasses = "relative overflow-hidden animate-circle-morph";
+    const shadowClass = circleColor === "green" 
+      ? "shadow-[var(--shadow-circle-glow)]" 
+      : "shadow-[var(--shadow-circle-3d)]";
     
     switch (circleColor) {
       case "red":
@@ -234,8 +236,20 @@ const GreenTapGame = () => {
         return `${baseClasses} bg-gradient-to-br from-game-blue via-blue-500 to-blue-700 ${shadowClass}`;
       case "yellow":
         return `${baseClasses} bg-gradient-to-br from-game-yellow via-yellow-400 to-yellow-600 ${shadowClass}`;
+      case "purple":
+        return `${baseClasses} bg-gradient-to-br from-game-purple via-purple-500 to-purple-700 ${shadowClass}`;
+      case "orange":
+        return `${baseClasses} bg-gradient-to-br from-game-orange via-orange-500 to-orange-700 ${shadowClass}`;
+      case "pink":
+        return `${baseClasses} bg-gradient-to-br from-game-pink via-pink-500 to-pink-700 ${shadowClass}`;
+      case "cyan":
+        return `${baseClasses} bg-gradient-to-br from-game-cyan via-cyan-500 to-cyan-700 ${shadowClass}`;
+      case "magenta":
+        return `${baseClasses} bg-gradient-to-br from-game-magenta via-fuchsia-500 to-fuchsia-700 ${shadowClass}`;
+      case "lime":
+        return `${baseClasses} bg-gradient-to-br from-game-lime via-lime-500 to-lime-700 ${shadowClass}`;
       case "green":
-        return `${baseClasses} bg-gradient-to-br from-game-green via-green-500 to-green-700 animate-pulse-glow ${shadowClass}`;
+        return `${baseClasses} bg-gradient-to-br from-game-green via-green-500 to-green-700 animate-circle-pulse-3d ${shadowClass}`;
       default:
         return `${baseClasses} bg-gradient-to-br from-game-red via-red-500 to-red-700 ${shadowClass}`;
     }
@@ -322,20 +336,25 @@ const GreenTapGame = () => {
               onClick={handleCircleTap}
               disabled={gameState === "idle"}
               className={`
-                w-48 h-48 rounded-full transition-all duration-300 transform border-4 border-white/20
+                w-48 h-48 rounded-full transition-all duration-500 transform border-4 border-white/30
                 ${getCircleColorClass()}
-                ${gameState === "playing" ? "hover:scale-105 active:scale-95 cursor-pointer" : ""}
+                ${gameState === "playing" ? "hover:scale-110 active:scale-90 cursor-pointer hover:rotate-3 active:rotate-6" : ""}
                 ${gameState === "idle" ? "opacity-50 cursor-not-allowed" : ""}
-                animate-color-change
+                animate-color-change backdrop-blur-sm
               `}
               style={{
                 boxShadow: circleColor === "green" 
-                  ? "0 0 60px hsl(var(--game-green) / 0.8), inset 0 4px 8px rgba(255,255,255,0.2)" 
-                  : "var(--shadow-3d), inset 0 4px 8px rgba(255,255,255,0.2)"
+                  ? `0 0 80px hsl(var(--game-green) / 0.9), 0 0 120px hsl(var(--game-green) / 0.6), var(--shadow-circle-deep), inset 0 6px 12px rgba(255,255,255,0.3), inset 0 -6px 12px rgba(0,0,0,0.2)`
+                  : `var(--shadow-circle-3d), inset 0 6px 12px rgba(255,255,255,0.25), inset 0 -6px 12px rgba(0,0,0,0.15)`,
+                background: circleColor === "green" 
+                  ? `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), transparent 50%), ${getCircleColorClass().match(/bg-gradient-to-br[^"]+/)?.[0] || ''}`
+                  : `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 50%)`
               }}
             />
-            {/* 3D highlight overlay */}
-            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
+            {/* Enhanced 3D highlight overlays */}
+            <div className="absolute inset-3 rounded-full bg-gradient-to-br from-white/40 via-white/10 to-transparent pointer-events-none" />
+            <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-white/60 blur-sm pointer-events-none animate-pulse" />
+            <div className="absolute bottom-6 right-6 w-4 h-4 rounded-full bg-white/40 blur-xs pointer-events-none" />
           </div>
         </div>
 
