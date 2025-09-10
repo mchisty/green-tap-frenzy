@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX, ShoppingCart, RotateCcw } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Volume2, VolumeX, ShoppingCart, RotateCcw, HelpCircle } from "lucide-react";
 import { useAdMob } from "@/hooks/useAdMob";
 import { useInAppPurchase } from "@/hooks/useInAppPurchase";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +21,7 @@ const GreenTapGame = () => {
   const [greenTimeoutId, setGreenTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [wasRecentlyGreen, setWasRecentlyGreen] = useState(false);
   const [showScorePop, setShowScorePop] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const { toast } = useToast();
   
@@ -296,14 +298,36 @@ const GreenTapGame = () => {
             <h1 className="text-4xl font-bold text-primary title-clean">
               Green Tap Challenge
             </h1>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsMuted(!isMuted)}
-              className="shrink-0"
-            >
-              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-            </Button>
+            <div className="flex gap-2 shrink-0">
+              <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <HelpCircle size={20} />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-xl font-bold text-primary">
+                      How to Play
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="text-lg text-muted-foreground space-y-3 p-4">
+                    <p>• Tap the circle only when it's <span className="bg-gradient-to-r from-game-green to-green-400 bg-clip-text text-transparent font-bold glow-3d">green</span></p>
+                    <p>• Colors change every <span className="text-primary font-semibold glow-3d">1 second</span></p>
+                    <p>• Green appears every <span className="text-accent font-semibold glow-3d">4th change</span></p>
+                    <p>• Speed increases every <span className="text-game-yellow font-semibold glow-3d">5 points</span></p>
+                    <p>• You have <span className="text-destructive font-semibold glow-3d">1.5 seconds</span> to tap green!</p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsMuted(!isMuted)}
+              >
+                {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </Button>
+            </div>
           </div>
           <p className="text-muted-foreground text-lg">
             Tap the circle only when it turns green!
