@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.yourcompany.greentap',
+  appId: 'com.mchisty.greentap',
   appName: 'Green Tap Frenzy',
   webDir: 'dist',
   server: {
