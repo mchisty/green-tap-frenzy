@@ -345,10 +345,7 @@ const GreenTapGame = () => {
               style={{
                 boxShadow: circleColor === "green" 
                   ? `0 0 80px hsl(var(--game-green) / 0.9), 0 0 120px hsl(var(--game-green) / 0.6), var(--shadow-circle-deep), inset 0 6px 12px rgba(255,255,255,0.3), inset 0 -6px 12px rgba(0,0,0,0.2)`
-                  : `var(--shadow-circle-3d), inset 0 6px 12px rgba(255,255,255,0.25), inset 0 -6px 12px rgba(0,0,0,0.15)`,
-                background: circleColor === "green" 
-                  ? `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), transparent 50%), ${getCircleColorClass().match(/bg-gradient-to-br[^"]+/)?.[0] || ''}`
-                  : `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 50%)`
+                  : `var(--shadow-circle-3d), inset 0 6px 12px rgba(255,255,255,0.25), inset 0 -6px 12px rgba(0,0,0,0.15)`
               }}
             />
             {/* Enhanced 3D highlight overlays */}
