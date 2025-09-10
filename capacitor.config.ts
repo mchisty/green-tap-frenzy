@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.966de51c627b4779821782e1fdb259a5',
-  appName: 'green-tap-frenzy',
+  appId: 'com.yourcompany.greentap',
+  appName: 'Green Tap Frenzy',
   webDir: 'dist',
   server: {
     url: 'https://966de51c-627b-4779-8217-82e1fdb259a5.lovableproject.com?forceHideBadge=true',

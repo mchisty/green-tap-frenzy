@@ -1,0 +1,82 @@
+name: Build Android Release
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build web app
+      run: npm run build
+
+    - name: Sync Capacitor
+      run: npx cap sync android
+
+    - name: Decode Keystore
+      env:
+        ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+      run: |
+        echo "$ANDROID_KEYSTORE_B64" | base64 -d > android/app/greentap.keystore
+
+    - name: Create gradle.properties
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      run: |
+        echo "GREENTAP_UPLOAD_STORE_FILE=greentap.keystore" >> android/gradle.properties
+        echo "GREENTAP_UPLOAD_STORE_PASSWORD=$KEYSTORE_PASSWORD" >> android/gradle.properties
+        echo "GREENTAP_UPLOAD_KEY_ALIAS=$KEY_ALIAS" >> android/gradle.properties
+        echo "GREENTAP_UPLOAD_KEY_PASSWORD=$KEY_PASSWORD" >> android/gradle.properties
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x android/gradlew
+
+    - name: Build Android App Bundle (Release)
+      run: |
+        cd android
+        ./gradlew bundleRelease --no-daemon
+
+    - name: Upload App Bundle
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release-bundle
+        path: android/app/build/outputs/bundle/release/app-release.aab
+
+    - name: Build Android APK (Debug)
+      run: |
+        cd android
+        ./gradlew assembleDebug --no-daemon
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug-apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk
