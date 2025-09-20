@@ -23,7 +23,11 @@
 2. Click **"Set up a merchant account"** when prompted
 3. Either select existing payments profile or click **"Create payments profile"**
 4. Complete the payments profile setup with your business/personal information
-5. Wait for Google to verify your account (can take 1-3 business days)
+5. **Complete payments profile setup:**
+   - **Optional:** Enroll for 15% service fee (reduces Google's commission from 30% to 15%)
+   - **Required:** Add payment method (click "Add payment method" to receive earnings)
+   - **Optional:** Set up sales tax if applicable to your region
+6. Wait for Google to verify your account (can take 1-3 business days)
 
 **Then, create the in-app product:**
 1. Return to **Monetize with Play** → **Products** → **In-app products**
