@@ -17,10 +17,22 @@
 
 ### 3. App Store Configuration
 **Google Play Store:**
-1. Go to Google Play Console → Your App → **Monetize with Play** → **Products** → **In-app products**
-2. Create product with ID: `remove_ads`
-3. Set price (e.g., $2.99)
-4. Activate the product
+
+**First, set up payments profile (required for monetization):**
+1. In Google Play Console → **Monetize with Play** → **Products** → **In-app products**
+2. Click **"Set up a merchant account"** when prompted
+3. Either select existing payments profile or click **"Create payments profile"**
+4. Complete the payments profile setup with your business/personal information
+5. Wait for Google to verify your account (can take 1-3 business days)
+
+**Then, create the in-app product:**
+1. Return to **Monetize with Play** → **Products** → **In-app products**
+2. Click **"Create product"** 
+3. Product ID: `remove_ads`
+4. Product type: **Managed product** (one-time purchase)
+5. Set price (e.g., $2.99)
+6. Add product details (name, description)
+7. Activate the product
 
 **Apple App Store:**
 1. Go to App Store Connect → Your App → Features → In-App Purchases
