@@ -26,9 +26,9 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
   const initializePurchases = async () => {
     try {
       // Initialize RevenueCat with your public API key
-      // Replace with your actual RevenueCat public API key
+      // TODO: Replace with your actual RevenueCat public API key from dashboard
       await Purchases.configure({
-        apiKey: 'your_revenuecat_public_api_key_here', // Replace with actual key
+        apiKey: 'PASTE_YOUR_REVENUECAT_PUBLIC_API_KEY_HERE', // Replace with actual key from RevenueCat dashboard
         appUserID: null // Optional: set a unique user ID
       });
       
