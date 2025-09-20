@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { Purchases, PURCHASES_ERROR_CODE } from '@revenuecat/purchases-capacitor';
 
 interface PurchaseInfo {
   success: boolean;
@@ -24,8 +25,13 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
 
   const initializePurchases = async () => {
     try {
-      // TODO: Initialize actual purchase system when deployed to mobile
-      // This is a placeholder for the real implementation
+      // Initialize RevenueCat with your public API key
+      // Replace with your actual RevenueCat public API key
+      await Purchases.configure({
+        apiKey: 'your_revenuecat_public_api_key_here', // Replace with actual key
+        appUserID: null // Optional: set a unique user ID
+      });
+      
       setIsInitialized(true);
     } catch (error) {
       console.error('Failed to initialize purchases:', error);
@@ -45,15 +51,38 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
         return { success: true };
       }
 
-      // TODO: Implement actual purchase logic for mobile
-      // Example with RevenueCat:
-      // const purchaseResult = await CapacitorPurchases.purchasePackage({
-      //   identifier: 'remove_ads',
-      //   offeringIdentifier: 'default'
-      // });
-      
-      onRemoveAds();
-      return { success: true };
+      // Implement actual purchase logic for mobile using RevenueCat
+      try {
+        const offerings = await Purchases.getOfferings();
+        const currentOffering = offerings.current;
+        
+        if (!currentOffering || !currentOffering.availablePackages || currentOffering.availablePackages.length === 0) {
+          throw new Error('No products available for purchase');
+        }
+
+        // Look for the remove ads package (you'll need to set this up in RevenueCat dashboard)
+        const removeAdsPackage = currentOffering.availablePackages.find(
+          pkg => pkg.identifier === 'remove_ads' || pkg.identifier === '$rc_lifetime'
+        ) || currentOffering.availablePackages[0];
+
+        const purchaseResult = await Purchases.purchasePackage({
+          aPackage: removeAdsPackage
+        });
+
+        // Check if purchase was successful and user now has the entitlement
+        if (purchaseResult.customerInfo.entitlements?.active && 
+            purchaseResult.customerInfo.entitlements.active['remove_ads']) {
+          onRemoveAds();
+          return { success: true };
+        } else {
+          throw new Error('Purchase completed but entitlement not active');
+        }
+      } catch (purchaseError: any) {
+        if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
+          return { success: false, error: 'Purchase was cancelled' };
+        }
+        throw purchaseError;
+      }
     } catch (error) {
       console.error('Purchase failed:', error);
       return { success: false, error };
@@ -73,14 +102,17 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
         return { success: true };
       }
 
-      // TODO: Implement actual restore logic for mobile
-      // Example with RevenueCat:
-      // const customerInfo = await CapacitorPurchases.restorePurchases();
-      // if (customerInfo.customerInfo.entitlements && customerInfo.customerInfo.entitlements['remove_ads']?.isActive) {
-      //   onRemoveAds();
-      // }
+      // Implement actual restore logic for mobile using RevenueCat
+      const restoreResult = await Purchases.restorePurchases();
       
-      return { success: true };
+      // Check if user has active remove_ads entitlement
+      if (restoreResult.customerInfo.entitlements?.active && 
+          restoreResult.customerInfo.entitlements.active['remove_ads']) {
+        onRemoveAds();
+        return { success: true };
+      }
+      
+      return { success: true }; // Restore completed successfully, but no active entitlements
     } catch (error) {
       console.error('Restore failed:', error);
       return { success: false, error };
