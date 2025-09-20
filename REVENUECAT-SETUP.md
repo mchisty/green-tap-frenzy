@@ -30,13 +30,16 @@
 6. Wait for Google to verify your account (can take 1-3 business days)
 
 **Then, create the in-app product:**
-1. Return to **Monetize with Play** → **Products** → **In-app products**
-2. Click **"Create product"** 
-3. Product ID: `remove_ads`
-4. Product type: **Managed product** (one-time purchase)
-5. Set price (e.g., $2.99)
-6. Add product details (name, description)
-7. Activate the product
+1. You should now be on the **In-app products** page (as shown in your screenshot)
+2. Click the blue **"Create product"** button on the right
+3. Fill in the product details:
+   - **Product ID**: `remove_ads` (MUST match exactly - used in app code)
+   - **Name**: "Remove Ads" (user-facing name)
+   - **Description**: "Remove all advertisements from the game permanently"
+4. **Product type**: Select **"Managed product"** (one-time purchase)
+5. **Price**: Set your desired price (e.g., $2.99)
+6. **Status**: Make sure to **activate** the product when ready
+7. Click **"Save"** to create the product
 
 **Apple App Store:**
 1. Go to App Store Connect → Your App → Features → In-App Purchases
