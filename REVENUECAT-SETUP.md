@@ -17,7 +17,7 @@
 
 ### 3. App Store Configuration
 **Google Play Store:**
-1. Go to Google Play Console → Your App → Monetize → Products → In-app products
+1. Go to Google Play Console → Your App → **Monetize with Play** → **Products** → **In-app products**
 2. Create product with ID: `remove_ads`
 3. Set price (e.g., $2.99)
 4. Activate the product
