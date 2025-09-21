@@ -25,13 +25,7 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
 
   const initializePurchases = async () => {
     try {
-      const apiKey = 'YOUR_REVENUECAT_PUBLIC_API_KEY_HERE';
-      
-      // Check if API key is still placeholder
-      if (apiKey === 'YOUR_REVENUECAT_PUBLIC_API_KEY_HERE') {
-        console.error('RevenueCat API key not configured');
-        return;
-      }
+      const apiKey = 'goog_dDPmNoebafUIAZtvXlLeRewNQKs';
       
       // Initialize RevenueCat with your public API key
       await Purchases.configure({
