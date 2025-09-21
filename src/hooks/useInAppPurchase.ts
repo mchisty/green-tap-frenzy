@@ -123,7 +123,8 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
         }
         
         if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED_ERROR) {
-          return { success: false, error: 'Purchases are not allowed on this device. Please check your device settings.' };
+          // Some Android dismiss actions may be reported under this code; treat as user cancellation
+          return { success: false, error: 'cancelled' };
         }
         
         if (purchaseError.code === PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) {
