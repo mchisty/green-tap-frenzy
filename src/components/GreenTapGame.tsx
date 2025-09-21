@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Volume2, VolumeX, ShoppingCart, RotateCcw, HelpCircle } from "lucide-react";
+import { AppInfo } from "@/components/AppInfo";
 import { useAdMob } from "@/hooks/useAdMob";
 import { useInAppPurchase } from "@/hooks/useInAppPurchase";
 import { useToast } from "@/hooks/use-toast";
@@ -299,6 +300,7 @@ const GreenTapGame = () => {
               Green Tap Challenge
             </h1>
             <div className="flex gap-2 shrink-0">
+              <AppInfo />
               <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="icon">
