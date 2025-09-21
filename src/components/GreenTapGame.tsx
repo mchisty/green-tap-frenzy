@@ -6,6 +6,7 @@ import { AppInfo } from "@/components/AppInfo";
 import { useAdMob } from "@/hooks/useAdMob";
 import { useInAppPurchase } from "@/hooks/useInAppPurchase";
 import { useToast } from "@/hooks/use-toast";
+import { Capacitor } from "@capacitor/core";
 
 type GameState = "idle" | "playing" | "gameOver";
 type CircleColor = "red" | "blue" | "yellow" | "green" | "purple" | "orange" | "pink" | "cyan" | "magenta" | "lime";
@@ -488,7 +489,7 @@ const GreenTapGame = () => {
       )}
       
       {/* Banner Ad Simulation (Web Preview Only) */}
-      {bannerVisible && !adsRemoved && (
+      {bannerVisible && !adsRemoved && !Capacitor.isNativePlatform() && (
         <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white text-center py-3 text-sm border-t border-gray-600">
           🎬 Banner Ad (Simulated for Web Preview) - Would be real AdMob banner on mobile
         </div>
