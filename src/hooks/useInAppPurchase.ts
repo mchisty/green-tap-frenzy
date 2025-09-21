@@ -53,35 +53,64 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
 
       // Implement actual purchase logic for mobile using RevenueCat
       try {
+        console.log('Fetching RevenueCat offerings...');
         const offerings = await Purchases.getOfferings();
+        console.log('Offerings received:', offerings);
+        
         const currentOffering = offerings.current;
         
         if (!currentOffering || !currentOffering.availablePackages || currentOffering.availablePackages.length === 0) {
-          throw new Error('No products available for purchase');
+          console.error('No offerings or packages available. Check RevenueCat dashboard configuration.');
+          throw new Error('No products available for purchase. Please ensure RevenueCat is properly configured with products and entitlements.');
         }
+
+        console.log('Available packages:', currentOffering.availablePackages.map(pkg => ({ id: pkg.identifier })));
 
         // Look for the remove ads package (you'll need to set this up in RevenueCat dashboard)
         const removeAdsPackage = currentOffering.availablePackages.find(
           pkg => pkg.identifier === 'remove_ads' || pkg.identifier === '$rc_lifetime'
         ) || currentOffering.availablePackages[0];
 
+        console.log('Selected package for purchase:', removeAdsPackage.identifier);
+
         const purchaseResult = await Purchases.purchasePackage({
           aPackage: removeAdsPackage
         });
 
+        console.log('Purchase result:', purchaseResult);
+
         // Check if purchase was successful and user now has the entitlement
         if (purchaseResult.customerInfo.entitlements?.active && 
             purchaseResult.customerInfo.entitlements.active['remove_ads']) {
+          console.log('Purchase successful, remove_ads entitlement is active');
           onRemoveAds();
           return { success: true };
         } else {
-          throw new Error('Purchase completed but entitlement not active');
+          console.error('Purchase completed but entitlement not active. Check RevenueCat entitlement configuration.');
+          throw new Error('Purchase completed but ad-free feature not activated. Please contact support.');
         }
       } catch (purchaseError: any) {
+        console.error('Purchase error details:', purchaseError);
+        
         if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
           return { success: false, error: 'Purchase was cancelled' };
         }
-        throw purchaseError;
+        
+        if (purchaseError.code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR) {
+          return { success: false, error: 'Store connection problem. Please check your internet connection and try again.' };
+        }
+        
+        if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED_ERROR) {
+          return { success: false, error: 'Purchases are not allowed on this device. Please check your device settings.' };
+        }
+        
+        if (purchaseError.code === PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) {
+          return { success: false, error: 'Payment is pending. Please wait for confirmation from your payment provider.' };
+        }
+        
+        // Generic error with more details
+        const errorMessage = purchaseError.message || 'Unknown purchase error occurred';
+        return { success: false, error: `Purchase failed: ${errorMessage}. Please ensure RevenueCat is properly configured.` };
       }
     } catch (error) {
       console.error('Purchase failed:', error);
