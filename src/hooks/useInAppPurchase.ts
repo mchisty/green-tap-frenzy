@@ -98,16 +98,24 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
       } catch (purchaseError: any) {
         console.error('Purchase error details:', purchaseError);
         
+        // User explicitly cancelled the purchase flow
         if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-          return { success: false, error: 'Purchase was cancelled' };
+          return { success: false, error: 'cancelled' };
         }
         
-        // Handle different types of user cancellation
+        // Handle different types of user cancellation and dismissal
         if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_INVALID_ERROR ||
             purchaseError.message?.toLowerCase().includes('cancel') ||
             purchaseError.message?.toLowerCase().includes('user cancel') ||
             purchaseError.userCancelled === true) {
-          return { success: false, error: 'Purchase was cancelled by user' };
+          return { success: false, error: 'cancelled' };
+        }
+        
+        // Payment was declined by payment provider
+        if (purchaseError.message?.toLowerCase().includes('declined') ||
+            purchaseError.message?.toLowerCase().includes('payment was declined') ||
+            purchaseError.code === 'PAYMENT_DECLINED') {
+          return { success: false, error: 'payment_declined' };
         }
         
         if (purchaseError.code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR) {

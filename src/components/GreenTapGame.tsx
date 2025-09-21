@@ -267,15 +267,21 @@ const GreenTapGame = () => {
         description: "Ads have been removed permanently.",
       });
     } else if (result?.error) {
-      // Check if it's a cancellation vs actual error
+      // Handle different error types appropriately
       const errorMessage = result.error.toString().toLowerCase();
-      const isCancellation = errorMessage.includes('cancel') || errorMessage.includes('cancelled');
       
-      if (isCancellation) {
-        // Don't show error toast for cancellations - user intentionally cancelled
+      if (errorMessage === 'cancelled') {
+        // Don't show error toast for user cancellations - user intentionally cancelled
         console.log('Purchase cancelled by user');
+      } else if (errorMessage === 'payment_declined') {
+        // Show gentle message for payment declines
+        toast({
+          title: "Payment Declined",
+          description: "Your payment was declined. Please try a different payment method.",
+          variant: "destructive",
+        });
       } else {
-        // Show error toast only for actual errors
+        // Show error toast for actual errors
         toast({
           title: "Purchase Failed",
           description: typeof result.error === 'string' ? result.error : "Please try again later.",
