@@ -426,7 +426,7 @@ const GreenTapGame = () => {
               className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold shadow-lg"
             >
               <ShoppingCart className="w-4 h-4 mr-2" />
-              {isPurchasing ? "Processing..." : "Remove Ads ($2.99)"}
+              {isPurchasing ? "Processing..." : "Remove Ads"}
             </Button>
             
             <Button
