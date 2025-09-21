@@ -280,6 +280,12 @@ const GreenTapGame = () => {
           description: "Your payment was declined. Please try a different payment method.",
           variant: "destructive",
         });
+      } else if (errorMessage.includes('already_owned') || errorMessage.includes('already active') || errorMessage.includes('already own')) {
+        toast({
+          title: "Already Purchased",
+          description: "Restoring your purchase...",
+        });
+        await restorePurchases();
       } else {
         // Show error toast for actual errors
         toast({

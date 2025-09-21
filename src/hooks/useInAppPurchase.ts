@@ -39,6 +39,36 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
     }
   };
 
+  // Check and apply entitlement state from RevenueCat/local storage
+  const checkEntitlements = useCallback(async (): Promise<boolean> => {
+    try {
+      // On web preview, rely on local storage flag set by AdMob hook
+      if (!Capacitor.isNativePlatform()) {
+        const purchased = localStorage.getItem('ads_removed') === 'true';
+        if (purchased) onRemoveAds();
+        return purchased;
+      }
+
+      const info = await Purchases.getCustomerInfo();
+      const active = info?.customerInfo?.entitlements?.active && info.customerInfo.entitlements.active['remove_ads'];
+      if (active) {
+        onRemoveAds();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('Failed to check entitlements:', e);
+      return false;
+    }
+  }, [onRemoveAds]);
+
+  // When initialized, sync entitlement state so UI reflects ownership
+  useEffect(() => {
+    if (isInitialized) {
+      checkEntitlements();
+    }
+  }, [isInitialized, checkEntitlements]);
+
   const purchaseRemoveAds = useCallback(async (): Promise<PurchaseInfo> => {
     if (isPurchasing) return { success: false };
 
@@ -54,6 +84,13 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
       if (!Capacitor.isNativePlatform()) {
         await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
         onRemoveAds();
+        return { success: true };
+      }
+
+      // Before purchasing, check if user already owns the entitlement
+      const alreadyOwned = await checkEntitlements();
+      if (alreadyOwned) {
+        console.log('Entitlement already active, skipping purchase');
         return { success: true };
       }
 
@@ -97,6 +134,24 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
         }
       } catch (purchaseError: any) {
         console.error('Purchase error details:', purchaseError);
+        
+        // If item already owned, treat as success after verifying entitlement
+        if (purchaseError.code === PURCHASES_ERROR_CODE.PRODUCT_ALREADY_PURCHASED_ERROR ||
+            purchaseError.message?.toLowerCase().includes('already active') ||
+            purchaseError.message?.toLowerCase().includes('already own')) {
+          const hasEntitlement = await checkEntitlements();
+          if (hasEntitlement) {
+            return { success: true };
+          }
+          try {
+            const restoreResult = await Purchases.restorePurchases();
+            if (restoreResult.customerInfo.entitlements?.active && restoreResult.customerInfo.entitlements.active['remove_ads']) {
+              onRemoveAds();
+              return { success: true };
+            }
+          } catch {}
+          return { success: false, error: 'already_owned' };
+        }
         
         // User explicitly cancelled the purchase flow
         if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
