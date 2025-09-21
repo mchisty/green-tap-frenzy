@@ -265,6 +265,22 @@ const GreenTapGame = () => {
         title: "Purchase Successful!",
         description: "Ads have been removed permanently.",
       });
+    } else if (result?.error) {
+      // Check if it's a cancellation vs actual error
+      const errorMessage = result.error.toString().toLowerCase();
+      const isCancellation = errorMessage.includes('cancel') || errorMessage.includes('cancelled');
+      
+      if (isCancellation) {
+        // Don't show error toast for cancellations - user intentionally cancelled
+        console.log('Purchase cancelled by user');
+      } else {
+        // Show error toast only for actual errors
+        toast({
+          title: "Purchase Failed",
+          description: typeof result.error === 'string' ? result.error : "Please try again later.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Purchase Failed",
@@ -280,6 +296,15 @@ const GreenTapGame = () => {
       toast({
         title: "Purchases Restored",
         description: "Your previous purchases have been restored.",
+      });
+    } else if (result?.error) {
+      const errorMessage = result.error.toString().toLowerCase();
+      toast({
+        title: "Restore Failed",
+        description: errorMessage.includes('no purchase') || errorMessage.includes('not found') 
+          ? "No previous purchases found to restore." 
+          : "Unable to restore purchases. Please try again.",
+        variant: "destructive",
       });
     } else {
       toast({

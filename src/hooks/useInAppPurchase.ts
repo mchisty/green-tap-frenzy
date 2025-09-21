@@ -96,6 +96,14 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
           return { success: false, error: 'Purchase was cancelled' };
         }
         
+        // Handle different types of user cancellation
+        if (purchaseError.code === PURCHASES_ERROR_CODE.PURCHASE_INVALID_ERROR ||
+            purchaseError.message?.toLowerCase().includes('cancel') ||
+            purchaseError.message?.toLowerCase().includes('user cancel') ||
+            purchaseError.userCancelled === true) {
+          return { success: false, error: 'Purchase was cancelled by user' };
+        }
+        
         if (purchaseError.code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR) {
           return { success: false, error: 'Store connection problem. Please check your internet connection and try again.' };
         }
