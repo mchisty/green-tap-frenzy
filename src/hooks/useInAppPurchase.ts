@@ -25,10 +25,17 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
 
   const initializePurchases = async () => {
     try {
+      const apiKey = 'YOUR_REVENUECAT_PUBLIC_API_KEY_HERE';
+      
+      // Check if API key is still placeholder
+      if (apiKey === 'YOUR_REVENUECAT_PUBLIC_API_KEY_HERE') {
+        console.error('RevenueCat API key not configured');
+        return;
+      }
+      
       // Initialize RevenueCat with your public API key
-      // RevenueCat public API key configured
       await Purchases.configure({
-        apiKey: 'YOUR_REVENUECAT_PUBLIC_API_KEY_HERE', // Replace with your actual RevenueCat public API key
+        apiKey: apiKey,
         appUserID: null // Optional: set a unique user ID
       });
       
@@ -39,7 +46,12 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
   };
 
   const purchaseRemoveAds = useCallback(async (): Promise<PurchaseInfo> => {
-    if (!isInitialized || isPurchasing) return { success: false };
+    if (isPurchasing) return { success: false };
+
+    // Check if RevenueCat is properly configured
+    if (!isInitialized) {
+      return { success: false, error: 'RevenueCat is not configured. Please contact the app developer.' };
+    }
 
     setIsPurchasing(true);
     
@@ -116,9 +128,16 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
           return { success: false, error: 'Payment is pending. Please wait for confirmation from your payment provider.' };
         }
         
+        // Check for configuration issues
+        if (purchaseError.message?.includes('credentials') || 
+            purchaseError.message?.includes('API key') ||
+            purchaseError.code === 'CONFIGURATION_ERROR') {
+          return { success: false, error: 'RevenueCat is not properly configured. Please contact the app developer.' };
+        }
+        
         // Generic error with more details
         const errorMessage = purchaseError.message || 'Unknown purchase error occurred';
-        return { success: false, error: `Purchase failed: ${errorMessage}. Please ensure RevenueCat is properly configured.` };
+        return { success: false, error: `Purchase failed: ${errorMessage}. Please try again later.` };
       }
     } catch (error) {
       console.error('Purchase failed:', error);
