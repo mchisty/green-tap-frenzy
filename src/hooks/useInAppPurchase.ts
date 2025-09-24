@@ -39,6 +39,25 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
     }
   };
 
+  // Helper: wait for entitlement to become active (post-purchase processing can be async)
+  const waitForEntitlementActive = async (maxWaitMs = 20000, intervalMs = 1500): Promise<boolean> => {
+    const start = Date.now();
+    try {
+      while (Date.now() - start < maxWaitMs) {
+        const info = await Purchases.getCustomerInfo();
+        const active = info?.customerInfo?.entitlements?.active && info.customerInfo.entitlements.active['remove_ads'];
+        if (active) {
+          onRemoveAds();
+          return true;
+        }
+        await new Promise((r) => setTimeout(r, intervalMs));
+      }
+    } catch (e) {
+      console.error('Polling entitlements failed:', e);
+    }
+    return false;
+  };
+
   // Check and apply entitlement state from RevenueCat/local storage
   const checkEntitlements = useCallback(async (): Promise<boolean> => {
     try {
@@ -123,15 +142,29 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
         console.log('Purchase result:', purchaseResult);
 
         // Check if purchase was successful and user now has the entitlement
-        if (purchaseResult.customerInfo.entitlements?.active && 
-            purchaseResult.customerInfo.entitlements.active['remove_ads']) {
+        const entitlementActive = purchaseResult.customerInfo.entitlements?.active && 
+            purchaseResult.customerInfo.entitlements.active['remove_ads'];
+        if (entitlementActive) {
           console.log('Purchase successful, remove_ads entitlement is active');
           onRemoveAds();
           return { success: true };
-        } else {
-          console.error('Purchase completed but entitlement not active. Check RevenueCat entitlement configuration.');
-          throw new Error('Purchase completed but ad-free feature not activated. Please contact support.');
         }
+
+        console.warn('Entitlement not active immediately. Polling RevenueCat...');
+        const activatedAfterWait = await waitForEntitlementActive(20000, 1500);
+        if (activatedAfterWait) {
+          return { success: true };
+        }
+
+        console.warn('Still not active. Forcing sync and retrying...');
+        try { await Purchases.syncPurchases(); } catch (e) { console.warn('syncPurchases failed:', e); }
+        const activatedAfterSync = await waitForEntitlementActive(15000, 1500);
+        if (activatedAfterSync) {
+          return { success: true };
+        }
+
+        console.error('Purchase completed but entitlement not active after waiting.');
+        throw new Error('Purchase completed but processing is delayed. Tap "Restore Purchases" in a minute or try again.');
       } catch (purchaseError: any) {
         console.error('Purchase error details:', purchaseError);
         
@@ -217,16 +250,23 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
       }
 
       // Implement actual restore logic for mobile using RevenueCat
+      try { await Purchases.syncPurchases(); } catch (e) { console.warn('syncPurchases during restore failed:', e); }
       const restoreResult = await Purchases.restorePurchases();
       
-      // Check if user has active remove_ads entitlement
-      if (restoreResult.customerInfo.entitlements?.active && 
-          restoreResult.customerInfo.entitlements.active['remove_ads']) {
+      const activeNow = restoreResult.customerInfo.entitlements?.active && 
+          restoreResult.customerInfo.entitlements.active['remove_ads'];
+      if (activeNow) {
         onRemoveAds();
         return { success: true };
       }
       
-      return { success: true }; // Restore completed successfully, but no active entitlements
+      // Sometimes processing is delayed, poll for a short while
+      const activated = await waitForEntitlementActive(15000, 1500);
+      if (activated) {
+        return { success: true };
+      }
+      
+      return { success: false, error: 'No previous purchases found to restore.' };
     } catch (error: any) {
       console.error('Restore failed:', error);
       
