@@ -227,9 +227,20 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
       }
       
       return { success: true }; // Restore completed successfully, but no active entitlements
-    } catch (error) {
+    } catch (error: any) {
       console.error('Restore failed:', error);
-      return { success: false, error };
+      
+      // Handle specific restore errors more gracefully
+      if (error.code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR) {
+        return { success: false, error: 'Store connection problem. Please check your internet connection and try again.' };
+      }
+      
+      if (error.code === PURCHASES_ERROR_CODE.CONFIGURATION_ERROR) {
+        return { success: false, error: 'App configuration issue. Please contact support.' };
+      }
+      
+      // Generic error
+      return { success: false, error: 'Unable to restore purchases. Please try again.' };
     } finally {
       setIsRestoring(false);
     }
