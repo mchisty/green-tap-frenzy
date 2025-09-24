@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Green Tap Frenzy</string>
     <string name="title_activity_main">Green Tap Frenzy</string>
-    <string name="package_name">com.yourcompany.greentap</string>
-    <string name="custom_url_scheme">com.yourcompany.greentap</string>
+    <string name="package_name">com.mchisty.greentap</string>
+    <string name="custom_url_scheme">com.mchisty.greentap</string>
 </resources>

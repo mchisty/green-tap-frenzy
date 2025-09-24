@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.yourcompany.greentap"
+    namespace "com.mchisty.greentap"
     compileSdk rootProject.ext.compileSdkVersion
 	
 	defaultConfig {
