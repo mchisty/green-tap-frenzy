@@ -82,11 +82,11 @@ export const AppInfo = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Version:</span>
-                <span>1.0.2</span>
+                <span>1.0.10</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Build:</span>
-                <span>3</span>
+                <span>11</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Package ID:</span>
