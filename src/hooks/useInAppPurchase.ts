@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { Purchases, PURCHASES_ERROR_CODE } from '@revenuecat/purchases-capacitor';
+import { Purchases, PURCHASES_ERROR_CODE, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 
 interface PurchaseInfo {
   success: boolean;
@@ -33,6 +33,10 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
         appUserID: null // Optional: set a unique user ID
       });
       
+      // Enable debug logs for troubleshooting
+      await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+      
+      console.log('RevenueCat initialized successfully');
       setIsInitialized(true);
     } catch (error) {
       console.error('Failed to initialize purchases:', error);
