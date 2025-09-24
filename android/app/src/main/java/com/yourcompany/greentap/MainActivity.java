@@ -1,4 +1,4 @@
-package com.yourcompany.greentap;
+package com.mchisty.greentap;
 
 import com.getcapacitor.BridgeActivity;
 
