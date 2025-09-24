@@ -132,10 +132,18 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
 
         console.log('Available packages:', currentOffering.availablePackages.map(pkg => ({ id: pkg.identifier })));
 
-        // Look for the remove ads package (you'll need to set this up in RevenueCat dashboard)
+        // Look for the remove ads package - prioritize $rc_lifetime as shown in RevenueCat dashboard
         const removeAdsPackage = currentOffering.availablePackages.find(
-          pkg => pkg.identifier === 'remove_ads' || pkg.identifier === '$rc_lifetime'
+          pkg => pkg.identifier === '$rc_lifetime'
+        ) || currentOffering.availablePackages.find(
+          pkg => pkg.identifier === 'remove_ads'
         ) || currentOffering.availablePackages[0];
+
+        console.log('Package details:', {
+          identifier: removeAdsPackage.identifier,
+          packageType: removeAdsPackage.packageType,
+          product: removeAdsPackage.product
+        });
 
         console.log('Selected package for purchase:', removeAdsPackage.identifier);
 
