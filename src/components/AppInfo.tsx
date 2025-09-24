@@ -14,12 +14,39 @@ interface DeviceInfo {
   isVirtual: boolean;
 }
 
+interface AppInfo {
+  name: string;
+  version: string;
+  build: string;
+}
+
 export const AppInfo = () => {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const [appInfo, setAppInfo] = useState<AppInfo>({
+    name: "Green Tap Frenzy",
+    version: "1.0.0",
+    build: "1"
+  });
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const getDeviceInfo = async () => {
+    const getAppAndDeviceInfo = async () => {
+      // Get app info
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { App } = await import('@capacitor/app');
+          const appData = await App.getInfo();
+          setAppInfo({
+            name: appData.name,
+            version: appData.version,
+            build: appData.build
+          });
+        } catch (error) {
+          console.error('Error getting app info:', error);
+        }
+      }
+
+      // Get device info
       if (Capacitor.isNativePlatform()) {
         try {
           const { Device } = await import('@capacitor/device');
@@ -49,7 +76,7 @@ export const AppInfo = () => {
     };
 
     if (isOpen) {
-      getDeviceInfo();
+      getAppAndDeviceInfo();
     }
   }, [isOpen]);
 
@@ -78,15 +105,15 @@ export const AppInfo = () => {
             <div className="grid gap-1 pl-6">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">App Name:</span>
-                <span>Green Tap Frenzy</span>
+                <span>{appInfo.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Version:</span>
-                <span>1.0.13</span>
+                <span>{appInfo.version}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Build:</span>
-                <span>14</span>
+                <span>{appInfo.build}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Package ID:</span>
