@@ -11,6 +11,7 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [productPrice, setProductPrice] = useState<string | null>(null);
 
   useEffect(() => {
     // Simulate initialization for web preview
@@ -85,12 +86,44 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
     }
   }, [onRemoveAds]);
 
-  // When initialized, sync entitlement state so UI reflects ownership
+  // Fetch product price information
+  const fetchProductPrice = useCallback(async () => {
+    try {
+      // For web preview, simulate a price
+      if (!Capacitor.isNativePlatform()) {
+        setProductPrice('$0.20');
+        return;
+      }
+
+      // Fetch actual price from RevenueCat offerings
+      const offerings = await Purchases.getOfferings();
+      const currentOffering = offerings.current;
+      
+      if (currentOffering && currentOffering.availablePackages && currentOffering.availablePackages.length > 0) {
+        // Look for the remove ads package
+        const removeAdsPackage = currentOffering.availablePackages.find(
+          pkg => pkg.identifier === '$rc_lifetime'
+        ) || currentOffering.availablePackages.find(
+          pkg => pkg.identifier === 'remove_ads'
+        ) || currentOffering.availablePackages[0];
+
+        if (removeAdsPackage && removeAdsPackage.product) {
+          setProductPrice(removeAdsPackage.product.priceString);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch product price:', error);
+      // Don't set price on error - button will show without price
+    }
+  }, []);
+
+  // When initialized, sync entitlement state and fetch price
   useEffect(() => {
     if (isInitialized) {
       checkEntitlements();
+      fetchProductPrice();
     }
-  }, [isInitialized, checkEntitlements]);
+  }, [isInitialized, checkEntitlements, fetchProductPrice]);
 
   const purchaseRemoveAds = useCallback(async (): Promise<PurchaseInfo> => {
     if (isPurchasing) return { success: false };
@@ -302,6 +335,7 @@ export const useInAppPurchase = (onRemoveAds: () => void) => {
     isInitialized,
     isPurchasing,
     isRestoring,
+    productPrice,
     purchaseRemoveAds,
     restorePurchases
   };
