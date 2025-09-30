@@ -501,17 +501,8 @@ const GreenTapGame = () => {
       
       {/* Ad-free indicator */}
       {adsRemoved && (
-        <div className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-          <span>Ad-Free ✓</span>
-          <button
-            onClick={() => {
-              localStorage.removeItem('ads_removed');
-              window.location.reload();
-            }}
-            className="text-xs underline hover:no-underline"
-          >
-            Reset
-          </button>
+        <div className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+          Ad-Free ✓
         </div>
       )}
       
