@@ -336,7 +336,7 @@ const GreenTapGame = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-4">
             <h1 className="text-4xl font-bold text-primary title-clean">
-              Green Tap Challenge
+              Green Tap Frenzy
             </h1>
             <div className="flex gap-2 shrink-0">
               <AppInfo />
